@@ -1,4 +1,4 @@
-openai
+openai>=3.13.0,<4
 mss
 pillow
 keyboard

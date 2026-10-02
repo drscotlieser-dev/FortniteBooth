@@ -1,146 +1,79 @@
 # Fortnite Booth
 
-**Fortnite Booth** is an experimental AI-powered color commentator for live Fortnite Zero Build streams.
+**Fortnite Booth** is an experimental AI-powered sports-style commentator for live Fortnite streams.
 
-Instead of continuously listening to player voice chat, the system uses producer-triggered gameplay screenshots and short event cues to generate concise sports-style color commentary. The generated commentary is converted to speech and played through the stream's normal Windows audio path.
+The project is exploring whether multimodal AI can function as a live broadcast booth: observing gameplay, understanding what is happening over time, deciding what matters, generating sports-style commentary, and delivering that commentary through synthesized speech during a live match.
 
-The goal is not constant AI narration. The goal is to create a recurring broadcast character — **The Booth** — that can analyze, praise, roast, and develop running storylines around noteworthy moments during a live match.
+The long-term goal is not simply to describe gameplay. The goal is to create something that feels like an actual sports broadcast built around Fortnite.
 
-## Current Version
 
-**V0 prototype / v0.1.0**
+## Current Version — V0.2
 
-The current prototype supports:
+V0.2 moves Fortnite Booth from manually triggered commentary to continuous game observation and automatic commentary.
 
-* Global producer hotkeys
-* Live monitor screenshot capture
-* AI vision analysis of the current gameplay scene
-* Different commentary modes for different events
-* Short-term memory of recent Booth comments
-* AI-generated speech
-* Windows-compatible audio playback
-* Compatibility with a normal TikTok LIVE Studio desktop-audio workflow
+Rather than waiting for a producer to request a comment from a single screenshot, the program continuously watches gameplay, maintains recent visual history, extracts structured game state, and decides when something is worth talking about.
 
-## Current Controls
 
-| Hotkey         | Function                   |
-| -------------- | -------------------------- |
-| `F8`           | General Booth commentary   |
-| `F9`           | Newbdaddy moment / roast   |
-| `F10`          | Zelda moment               |
-| `F11`          | Important or clutch moment |
-| `Ctrl+Shift+Q` | Shut down                  |
+### V0.2 Features
 
-## How It Works
+- Continuous local gameplay capture at approximately one frame per second
+- Rolling 15-second visual buffer stored in memory
+- Temporal analysis of multiple frames rather than a single screenshot
+- Structured Fortnite game-state extraction
+- High-detail HUD crops for important interface regions
+- Automatic detection of meaningful gameplay developments
+- Automatic commentary scheduling
+- Play-by-play and color-commentary modes
+- Short-term continuity between successive game-state analyses
+- Independent capture, analysis, commentary, and speech execution
+- AI-generated speech
+- Windows-compatible audio playback
+- Diagnostic JSONL session logging
+- Optional producer hotkeys for manual intervention
+- Compatibility with normal desktop-audio capture in streaming software
 
-```text
-Producer hotkey
-      ↓
-Capture current gameplay screen
-      ↓
-Screenshot + event cue + recent Booth history
-      ↓
-OpenAI vision/language model
-      ↓
-Short color-commentary line
-      ↓
-OpenAI text-to-speech
-      ↓
-Raw PCM audio
-      ↓
-Python builds Windows-compatible WAV
-      ↓
-Windows playback
-      ↓
-Streaming software captures system audio
-```
 
-Player microphone audio and Discord voice chat are not sent to the AI in the current version.
+### V0.2 Vision Architecture
 
-## Requirements
+Gameplay is captured locally once per second.
 
-* Windows
-* Python
-* OpenAI API account and API key
-* Fortnite or another game/display source
-* Streaming software capable of capturing Windows system audio
-
-Install the Python dependencies with:
-
-```powershell
-python -m pip install -r requirements.txt
-```
-
-## API Key
-
-The project expects the OpenAI API key to be available through the environment variable:
+Approximately every eight seconds, the system selects five frames from the rolling buffer:
 
 ```text
-OPENAI_API_KEY
+T-8 seconds
+T-6 seconds
+T-4 seconds
+T-2 seconds
+NOW
 ```
 
-Do **not** place an API key directly inside `booth.py` or commit API credentials to GitHub.
 
-On Windows, one way to store it for future sessions is:
+## Version History
 
-```powershell
-setx OPENAI_API_KEY "YOUR_API_KEY"
-```
+### V0.1.0
 
-Restart VS Code after initially creating the variable so new processes inherit it.
+Initial producer-triggered prototype using a single gameplay screenshot,
+vision analysis, generated commentary, TTS, and Windows audio playback.
 
-## Running the Prototype
+### V0.2.0
 
-From the project directory with the Python virtual environment activated:
+Added continuous screen capture, a rolling temporal buffer, structured
+game-state extraction, automatic event detection, and automatic commentary.
 
-```powershell
-python .\booth.py
-```
+See [`docs/development-notes.md`](docs/development-notes.md) for detailed
+development history and design decisions.
 
-The program will wait in the background for one of the producer hotkeys.
+## Next — V0.3
 
-## Current Limitations
+V0.3 is being designed as a transition from an AI commentator to an
+AI broadcast booth.
 
-V0 intentionally favors simplicity over automation.
+Planned areas include:
 
-Known limitations include:
-
-* A single screenshot captures the moment the hotkey is pressed, which can miss the action immediately preceding it.
-* AI analysis and speech generation introduce several seconds of latency.
-* Commentary events are manually triggered.
-* The program currently assumes a Windows audio environment.
-* Commentary history is temporary and lasts only for the current program session.
-
-## Roadmap
-
-### V1 — Instant Replay Vision
-
-Maintain a short rolling screenshot buffer so The Booth can see the sequence leading into an event rather than only its aftermath.
-
-### V2 — Event Awareness
-
-Detect useful gameplay state changes and obvious events automatically where practical.
-
-### V3 — Broadcast Memory
-
-Improve persistent session statistics, player tendencies, recurring jokes, storylines, and producer logic.
-
-### V4 — Realtime Broadcast Architecture
-
-Explore lower-latency realtime model interaction and more autonomous decisions about when commentary is warranted.
-
-## Development Notes
-
-Technical discoveries, bugs, design decisions, and prototype history are recorded in [`docs/development-notes.md`](docs/development-notes.md).
-
-## AI-Assisted Development
-
-Created by **Scot Lieser** with AI-assisted architecture, programming, debugging, and prototyping using **ChatGPT by OpenAI**.
-
-ChatGPT is used as a development tool and pair-programming assistant; it is not listed as a repository collaborator or software author.
-
-## Status
-
-Experimental prototype.
-
-The current focus is validating whether selective AI color commentary improves the entertainment value and viewer engagement of live gameplay before adding substantial automation.
+- Two distinct announcer personalities
+- A broadcast-director layer
+- Continuous discussion during low-action gameplay
+- Player statistics and historical performance
+- Weapon, map, season, and update knowledge
+- Persistent match and session storylines
+- Automatic transition into play-by-play during combat
